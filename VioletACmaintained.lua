@@ -51,6 +51,10 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
     task.wait()
     game:GetService("RunService"):Set3dRenderingEnabled(false)
     task.wait()
+    game:GetService("Players").LocalPlayer.PlayerGui:Destroy()
+    task.wait()
+    game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+    task.wait()
     for i,v in next, workspace:GetDescendants() do
     if v:IsA'Seat' then
     v:Destroy()
@@ -58,16 +62,6 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
     end
     task.wait()
     repeat task.wait() until game:GetService("Players").LocalPlayer
-    local connections = getconnections or get_signal_cons
-    if connections then
-        for _, v in pairs(connections(game:GetService("Players").LocalPlayer.Idled)) do
-            if v.Disable then
-                v:Disable()
-            elseif v.Disconnect then
-                v:Disconnect()
-            end
-        end
-    end
 end
 for i, botName in ipairs(bots) do
     if game:GetService("Players").LocalPlayer.Name == botName and config["SendJoinMsg"] == true then
