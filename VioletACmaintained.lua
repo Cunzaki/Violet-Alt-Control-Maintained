@@ -560,7 +560,7 @@ end
         game:GetService("Players").LocalPlayer.Character:Destroy()
         end
            
-        if msg == "$trip" then
+        if msg == "$fallover" then
         function getRoot(char)
 	    local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 	    return rootPart
