@@ -128,7 +128,7 @@ end
 
         if msg == "$cmds" then
         if game:GetService("Players").LocalPlayer.Name == bots[1] then
-        chatmsg("Join discordant.gg/agrxDcyRsG to see the commands! (remove ant from discordant)")
+        chatmsg("Join discordant.gg/UVNn9se9yT to see the commands! (remove ant from discordant)")
         elseif game:GetService("Players").LocalPlayer.Name ~= bots[1] then
         --
         end
