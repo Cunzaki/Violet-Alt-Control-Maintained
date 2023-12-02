@@ -1,0 +1,45 @@
+
+
+
+
+
+-- Your Main Account Username (Must have correct capitialization and correct spelling!)
+local controller = {           
+  ["MainAccount"] = "YOUR MAIN ACCOUNT GOES HERE"
+}
+
+-- The usernames of your bots (Up to 20 bots for now), For example: If you only have 4 bots just fill out 4 of the usernames and leave the rest the same. (Must have correct capitialization and correct spelling!)
+local bots = {                       
+  [1] = 'Bot1NameHere',         
+  [2] = 'Bot2NameHere',
+  [3] = 'Bot3NameHere',
+  [4] = 'Bot4NameHere',
+  [5] = 'Bot5NameHere',
+  [6] = 'Bot6NameHere',
+  [7] = 'Bot7NameHere',
+  [8] = 'Bot8NameHere',
+  [9] = 'Bot9NameHere',
+  [10] = 'Bot10NameHere',
+  [11] = 'Bot11NameHere',
+  [12] = 'Bot12NameHere',
+  [13] = 'Bot13NameHere',
+  [14] = 'Bot14NameHere',
+  [15] = 'Bot15NameHere',
+  [16] = 'Bot16NameHere',
+  [17] = 'Bot17NameHere',
+  [18] = 'Bot18NameHere',
+  [19] = 'Bot19NameHere',
+  [20] = 'Bot20NameHere'
+}
+
+-- Configuration (Set true to false if you don't want the bots sending a message when they load successfully)
+
+local config = {
+  ["SendJoinMsg"] = true
+}
+
+-- Don't change anything here in the loadstring or else the script will not work! ⚠
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Cunzaki/Violet-Alt-Control-Maintained/main/VioletACmaintained.lua"))({bots = bots, controller = controller, config = config})
+
+-- Extra Notes (Use Fluxus or Synapse X to use this script as Fluxus is free (with multi inject support) and Synapse is a paid alternative)
+-- 12/1/23 I use bluestacks and delta to use this, you can use whatever you like. If you have issues dm me on discord.
