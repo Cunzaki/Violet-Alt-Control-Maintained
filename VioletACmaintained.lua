@@ -62,6 +62,16 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
     end
     task.wait()
     repeat task.wait() until game:GetService("Players").LocalPlayer
+    local connections = getconnections or get_signal_cons
+    if connections then
+        for _, v in pairs(connections(game:GetService("Players").LocalPlayer.Idled)) do
+            if v.Disable then
+                v:Disable()
+            elseif v.Disconnect then
+                v:Disconnect()
+            end
+        end
+    end
 end
 for i, botName in ipairs(bots) do
     if game:GetService("Players").LocalPlayer.Name == botName and config["SendJoinMsg"] == true then
@@ -82,38 +92,33 @@ end
         game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, target)
     end
         
-    if cmd == "$say" then
-        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-        ohString1 = say_msg
-        chatmsg(ohString1)
-    end
+    if msg == "$say" then
+    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
+end
 
-    local args = string.split(string.lower(msg), " ")
-    local cmd = args[1]
-                
-    if cmd == "$slowspam" then
-        getgenv().LoopSlowSpam = false
-        getgenv().LoopFastSpam = false
-        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-        getgenv().LoopSlowSpam = true
-        while getgenv().LoopSlowSpam == true do
-            task.wait(2)
-            ohString1 = say_msg
-            chatmsg(ohString1)
-        end
+if cmd == "$slowspam" then
+    getgenv().LoopSlowSpam = false
+    getgenv().LoopFastSpam = false
+    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+    getgenv().LoopSlowSpam = true
+    while getgenv().LoopSlowSpam == true do
+        task.wait(2)
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
     end
-    
-    if cmd == "$fastspam" then
-        getgenv().LoopFastSpam = false
-        getgenv().LoopSlowSpam = false
-        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-        getgenv().LoopFastSpam = true
-        while getgenv().LoopFastSpam == true do
-            task.wait()
-            ohString1 = say_msg
-            chatmsg(ohString1)
-        end
+end
+
+if cmd == "$fastspam" then
+    getgenv().LoopFastSpam = false
+    getgenv().LoopSlowSpam = false
+    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+    getgenv().LoopFastSpam = true
+    while getgenv().LoopFastSpam == true do
+        task.wait()
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
     end
+end
+
                 
     if msg == "$unspam" then
         getgenv().LoopFastSpam = false
@@ -128,7 +133,7 @@ end
 
         if msg == "$cmds" then
         if game:GetService("Players").LocalPlayer.Name == bots[1] then
-        chatmsg("Join discordant.gg/UVNn9se9yT to see the commands! (remove ant from discordant)")
+        chatmsg("Join discordant.gg/agrxDcyRsG to see the commands! (remove ant from discordant)")
         elseif game:GetService("Players").LocalPlayer.Name ~= bots[1] then
         --
         end
@@ -560,7 +565,7 @@ end
         game:GetService("Players").LocalPlayer.Character:Destroy()
         end
            
-        if msg == "$fallover" then
+        if msg == "$trip" then
         function getRoot(char)
 	    local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 	    return rootPart
