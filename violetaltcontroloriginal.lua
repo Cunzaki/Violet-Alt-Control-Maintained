@@ -88,9 +88,9 @@ end
     local args = string.split(string.lower(msg), " ")
     local cmd = args[1]
     local function chatmsg(message, target)
-    target = target or "All"
-    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(message)
-end
+        target = target or "All"
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, target)
+    end
 
         
     if cmd == "$say" then
