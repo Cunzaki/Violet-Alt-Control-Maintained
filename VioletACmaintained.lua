@@ -88,13 +88,16 @@ end
     local args = string.split(string.lower(msg), " ")
     local cmd = args[1]
     local function chatmsg(message, target)
-        target = target or "All"
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, target)
-    end
+    target = target or "All"
+    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(message)
+end
+
         
     if msg == "$say" then
-    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
+    local say_msg = string.sub(msg, string.len(cmd) + 2)
+    game:GetService("TextService"):FilterStringAsync(say_msg, game:GetService("Players").LocalPlayer.UserId):andThen(function(filteredMsg)
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(filteredMsg:GetChatForUserAsync(game:GetService("Players").LocalPlayer.UserId), "All")
+    end)
 end
 
 if cmd == "$slowspam" then
@@ -125,7 +128,7 @@ end
         getgenv().LoopSlowSpam = false
     end
                 
-    if msg == "$rj" then
+    if msg == "$rejoin" then
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId,game.JobId,game:GetService("Players").LocalPlayer)
         ohString1 = "Rejoining bot for an update to the script to replicate!"
         chatmsg(ohString1) 
@@ -565,7 +568,7 @@ end
         game:GetService("Players").LocalPlayer.Character:Destroy()
         end
            
-        if msg == "$trip" then
+        if msg == "$fall" then
         function getRoot(char)
 	    local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
 	    return rootPart
