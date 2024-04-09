@@ -93,42 +93,45 @@ end
 end
 
         
-    if msg == "$say" then
-    local say_msg = string.sub(msg, string.len(cmd) + 2)
-    game:GetService("TextService"):FilterStringAsync(say_msg, game:GetService("Players").LocalPlayer.UserId):andThen(function(filteredMsg)
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(filteredMsg:GetChatForUserAsync(game:GetService("Players").LocalPlayer.UserId), "All")
-    end)
-end
-
-if cmd == "$slowspam" then
-    getgenv().LoopSlowSpam = false
-    getgenv().LoopFastSpam = false
-    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-    getgenv().LoopSlowSpam = true
-    while getgenv().LoopSlowSpam == true do
-        task.wait(2)
-        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
+    if cmd == "$say" then
+        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+        ohString1 = say_msg
+        chatmsg(ohString1)
     end
-end
 
-if cmd == "$fastspam" then
-    getgenv().LoopFastSpam = false
-    getgenv().LoopSlowSpam = false
-    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-    getgenv().LoopFastSpam = true
-    while getgenv().LoopFastSpam == true do
-        task.wait()
-        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(say_msg)
+    local args = string.split(string.lower(msg), " ")
+    local cmd = args[1]
+                
+    if cmd == "$slowspam" then
+        getgenv().LoopSlowSpam = false
+        getgenv().LoopFastSpam = false
+        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+        getgenv().LoopSlowSpam = true
+        while getgenv().LoopSlowSpam == true do
+            task.wait(2)
+            ohString1 = say_msg
+            chatmsg(ohString1)
+        end
     end
-end
-
+    
+    if cmd == "$fastspam" then
+        getgenv().LoopFastSpam = false
+        getgenv().LoopSlowSpam = false
+        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+        getgenv().LoopFastSpam = true
+        while getgenv().LoopFastSpam == true do
+            task.wait()
+            ohString1 = say_msg
+            chatmsg(ohString1)
+        end
+    end
                 
     if msg == "$unspam" then
         getgenv().LoopFastSpam = false
         getgenv().LoopSlowSpam = false
     end
                 
-    if msg == "$rejoin" then
+    if msg == "$rj" then
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId,game.JobId,game:GetService("Players").LocalPlayer)
         ohString1 = "Rejoining bot for an update to the script to replicate!"
         chatmsg(ohString1) 
@@ -564,7 +567,7 @@ end
             end   
         end
 
-        if msg == "$re" then
+        if msg == "$rejoin" then
         game:GetService("Players").LocalPlayer.Character:Destroy()
         end
            
