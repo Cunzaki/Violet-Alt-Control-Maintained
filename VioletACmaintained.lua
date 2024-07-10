@@ -126,7 +126,7 @@ if cmd == "$slowspam" then
         if counter % 3 == 0 then
             ohString1 = string.gsub(say_msg, " ", "😊")  
         elseif counter % 3 == 1 then
-            ohString1 = say_msg 
+            ohString1 = string.gsub(say_msg, " ", "😅")
         else
             ohString1 = randomString(3) 
         end
