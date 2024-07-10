@@ -104,7 +104,7 @@ end
                 
     
 local function randomString(length)
-    local chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    local chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     local str = ''
     for i = 1, length do
         local randomIndex = math.random(#chars)
@@ -120,15 +120,13 @@ if cmd == "$slowspam" then
     getgenv().LoopSlowSpam = true
     local counter = 0  
     while getgenv().LoopSlowSpam == true do
-        task.wait(math.random(4, 6)) 
+        task.wait(math.random(2, 4)) 
         counter = counter + 1
-        if counter % 3 == 0 then
-            local random_replacement = randomString(3) 
+        if counter % 2 == 0 then
+            local random_replacement = randomString(3)
             ohString1 = string.gsub(say_msg, " ", random_replacement)
-        elseif counter % 3 == 1 then
-            ohString1 = say_msg
         else
-            ohString1 = randomString(3) 
+            ohString1 = say_msg
         end
         chatmsg(ohString1)
     end
