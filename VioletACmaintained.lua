@@ -113,6 +113,7 @@ local function randomString(length)
     return str
 end
 
+
 if cmd == "$slowspam" then
     getgenv().LoopSlowSpam = false
     getgenv().LoopFastSpam = false
@@ -123,14 +124,13 @@ if cmd == "$slowspam" then
         task.wait(math.random(4, 6)) 
         counter = counter + 1
         if counter % 2 == 0 then
-            ohString1 = "/ " .. say_msg .. " /"  
+            ohString1 = randomString(3)  
         else
-            ohString1 = say_msg
+            ohString1 = string.gsub(say_msg, " ", "😊")
         end
         chatmsg(ohString1)
     end
 end
-
 
     
     if cmd == "$fastspam" then
