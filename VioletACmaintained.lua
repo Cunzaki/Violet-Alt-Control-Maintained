@@ -119,22 +119,12 @@ if cmd == "$slowspam" then
     local say_msg = string.sub(msg, string.len(cmd) + 2, string.len(msg))
     getgenv().LoopSlowSpam = true
     local counter = 0  
-    local spaceCount = 0 
-
     while getgenv().LoopSlowSpam == true do
-        task.wait(math.random(4, 6))
+        task.wait(math.random(4, 6)) 
         counter = counter + 1
         if counter % 2 == 0 then
-          
-            ohString1 = randomString(3)
-           
-            local spacePos = string.find(say_msg, " ")
-            if spacePos then
-                say_msg = string.sub(say_msg, 1, spacePos - 1) .. string.sub(say_msg, spacePos + 1)
-                spaceCount = spaceCount + 1
-            end
+            ohString1 = "/ " .. say_msg .. " /"  
         else
-           
             ohString1 = say_msg
         end
         chatmsg(ohString1)
