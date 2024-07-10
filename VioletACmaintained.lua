@@ -113,12 +113,6 @@ local function randomString(length)
     return str
 end
 
-
-local function randomDashSegment()
-    local segments = math.random(1, 5)  -- Random number of segments between 1 and 5
-    return string.rep("- ", segments):sub(1, -3)  -- Create the segment and remove the trailing space
-end
-
 if cmd == "$slowspam" then
     getgenv().LoopSlowSpam = false
     getgenv().LoopFastSpam = false
@@ -129,16 +123,17 @@ if cmd == "$slowspam" then
         task.wait(math.random(4, 6)) 
         counter = counter + 1
         if counter % 3 == 0 then
-            local dash_segment = randomDashSegment()
-            ohString1 = string.gsub(say_msg, " ", dash_segment)
+            local random_replacement = randomString(3) 
+            ohString1 = string.gsub(say_msg, " ", random_replacement)
         elseif counter % 3 == 1 then
-            ohString1 = string.gsub(say_msg, " ", dash_segment)
+            ohString1 = say_msg
         else
             ohString1 = randomString(3) 
         end
         chatmsg(ohString1)
     end
 end
+
 
     
     if cmd == "$fastspam" then
