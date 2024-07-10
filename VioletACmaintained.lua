@@ -76,7 +76,7 @@ end
 for i, botName in ipairs(bots) do
     if game:GetService("Players").LocalPlayer.Name == botName and config["SendJoinMsg"] == true then
     ohString1 = "A bot has loaded! [Bot " .. i .. " of " .. #bots .. "]"
-    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, "All")
+    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(ohString1)
         task.wait()
     end
 end
@@ -108,7 +108,7 @@ end
         local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
         getgenv().LoopSlowSpam = true
         while getgenv().LoopSlowSpam == true do
-            task.wait(2)
+            task.wait(4)
             ohString1 = say_msg
             chatmsg(ohString1)
         end
@@ -246,7 +246,7 @@ end
         end
       end
 
-      if msg:sub(1, 6) == "$8ball" then
+      if msg:sub(1, 6) == "$predict" then
         local answers = {
             "It is certain.",
             "Without a doubt.",
