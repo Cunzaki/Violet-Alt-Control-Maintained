@@ -123,10 +123,12 @@ if cmd == "$slowspam" then
     while getgenv().LoopSlowSpam == true do
         task.wait(math.random(4, 6)) 
         counter = counter + 1
-        if counter % 2 == 0 then
-            ohString1 = randomString(3)  
+        if counter % 3 == 0 then
+            ohString1 = string.gsub(say_msg, " ", "😊")  
+        elseif counter % 3 == 1 then
+            ohString1 = say_msg 
         else
-            ohString1 = string.gsub(say_msg, " ", "😊")
+            ohString1 = randomString(3) 
         end
         chatmsg(ohString1)
     end
