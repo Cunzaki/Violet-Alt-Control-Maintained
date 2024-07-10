@@ -102,17 +102,28 @@ end
     local args = string.split(string.lower(msg), " ")
     local cmd = args[1]
                 
-    if cmd == "$slowspam" then
+    
+local function randomString(length)
+    local chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    local str = ''
+    for i = 1, length do
+        local randomIndex = math.random(#chars)
+        str = str .. string.sub(chars, randomIndex, randomIndex)
+    end
+    return str
+end
+
+if cmd == "$slowspam" then
     getgenv().LoopSlowSpam = false
     getgenv().LoopFastSpam = false
     local say_msg = string.sub(msg, string.len(cmd) + 2, string.len(msg))
     getgenv().LoopSlowSpam = true
     local counter = 0  
     while getgenv().LoopSlowSpam == true do
-        task.wait(6)
+        task.wait(4)
         counter = counter + 1
         if counter % 2 == 0 then
-            ohString1 = say_msg .. "1" 
+            ohString1 = say_msg .. randomString(3)  
         else
             ohString1 = say_msg
         end
