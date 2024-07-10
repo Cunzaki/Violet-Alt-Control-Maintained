@@ -119,17 +119,28 @@ if cmd == "$slowspam" then
     local say_msg = string.sub(msg, string.len(cmd) + 2, string.len(msg))
     getgenv().LoopSlowSpam = true
     local counter = 0  
+    local spaceCount = 0 
+
     while getgenv().LoopSlowSpam == true do
-        task.wait(math.random(2, 4)) 
+        task.wait(math.random(4, 6))
         counter = counter + 1
         if counter % 2 == 0 then
-            ohString1 = randomString(3)  
+          
+            ohString1 = randomString(3)
+           
+            local spacePos = string.find(say_msg, " ")
+            if spacePos then
+                say_msg = string.sub(say_msg, 1, spacePos - 1) .. string.sub(say_msg, spacePos + 1)
+                spaceCount = spaceCount + 1
+            end
         else
+           
             ohString1 = say_msg
         end
         chatmsg(ohString1)
     end
 end
+
 
     
     if cmd == "$fastspam" then
@@ -157,7 +168,7 @@ end
 
         if msg == "$cmds" then
         if game:GetService("Players").LocalPlayer.Name == bots[1] then
-        chatmsg("Join discordant.gg/agrxDcyRsG to see the commands! (remove ant from discordant)")
+        chatmsg("")
         elseif game:GetService("Players").LocalPlayer.Name ~= bots[1] then
         --
         end
