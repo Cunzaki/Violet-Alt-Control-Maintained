@@ -124,9 +124,9 @@ if cmd == "$slowspam" then
         task.wait(math.random(4, 6)) 
         counter = counter + 1
         if counter % 3 == 0 then
-            ohString1 = string.gsub(say_msg, " ", "😊")  
+            ohString1 = string.gsub(say_msg, " ", "- -")  
         elseif counter % 3 == 1 then
-            ohString1 = string.gsub(say_msg, " ", "😅")
+            ohString1 = string.gsub(say_msg, " ", "- - -")
         else
             ohString1 = randomString(3) 
         end
