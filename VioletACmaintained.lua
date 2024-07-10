@@ -103,16 +103,22 @@ end
     local cmd = args[1]
                 
     if cmd == "$slowspam" then
-        getgenv().LoopSlowSpam = false
-        getgenv().LoopFastSpam = false
-        local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
-        getgenv().LoopSlowSpam = true
-        while getgenv().LoopSlowSpam == true do
-            task.wait(4)
+    getgenv().LoopSlowSpam = false
+    getgenv().LoopFastSpam = false
+    local say_msg = string.sub(msg, string.len(cmd)+2, string.len(msg))
+    getgenv().LoopSlowSpam = true
+    local counter = 0 
+    while getgenv().LoopSlowSpam == true do
+        task.wait(4)
+        counter = counter + 1
+        if counter % 2 == 0 then
+            ohString1 = say_msg .. "1" 
+        else
             ohString1 = say_msg
-            chatmsg(ohString1)
         end
+        chatmsg(ohString1)
     end
+end
     
     if cmd == "$fastspam" then
         getgenv().LoopFastSpam = false
