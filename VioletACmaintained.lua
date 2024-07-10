@@ -120,10 +120,10 @@ if cmd == "$slowspam" then
     getgenv().LoopSlowSpam = true
     local counter = 0  
     while getgenv().LoopSlowSpam == true do
-        task.wait(4)
+        task.wait(math.random(4, 6)) 
         counter = counter + 1
         if counter % 2 == 0 then
-            ohString1 = say_msg .. randomString(3)  
+            ohString1 = randomString(3)  
         else
             ohString1 = say_msg
         end
