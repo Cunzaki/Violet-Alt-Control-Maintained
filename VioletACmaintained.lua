@@ -109,7 +109,7 @@ end
     getgenv().LoopSlowSpam = true
     local counter = 0  
     while getgenv().LoopSlowSpam == true do
-        task.wait(2)
+        task.wait(6)
         counter = counter + 1
         if counter % 2 == 0 then
             ohString1 = say_msg .. "1" 
