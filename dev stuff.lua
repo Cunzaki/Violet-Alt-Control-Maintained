@@ -146,6 +146,7 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
                 getgenv().LoopOrbit = false
                 getgenv().LoopSlowSpam = false
                 getgenv().LoopFastSpam = false
+                getgenv().LoopFling = false
             end
             
             -- Basic commands
@@ -208,7 +209,7 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
                     task.wait(0.5)
                     chatmsg("🎭 EMOTES: $dance1-4, $laugh, $wave, $cheer, $point, $stopemotes")
                     task.wait(0.5)
-                    chatmsg("🏃 MOVEMENT: $wall <name>, $line <name>, $swarm <name>, $follow <name>, $goto <name>, $stack <name>, $lookat <name>, $orbit <name> [radius]")
+                    chatmsg("🏃 MOVEMENT: $wall <name>, $line <name>, $swarm <name>, $follow <name>, $goto <name>, $stack <name>, $lookat <name>, $orbit <name> [radius], $fling <name>")
                     task.wait(0.5)
                     chatmsg("⚡ ACTIONS: $jump, $sit, $unsit, $freeze, $unfreeze, $invisible, $visible, $spin, $unspin, $fall")
                     task.wait(0.5)
@@ -558,6 +559,108 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
                 getgenv().LoopSpin = false
             end
             
+            -- Fling command
+            if msg:sub(1, 7) == "$fling " then
+                stopAllLoops()
+                local playerName = msg:sub(8)
+                local targetPlayer = findPlayer(playerName)
+                
+                if targetPlayer and targetPlayer ~= LocalPlayer and not table.find(bots, targetPlayer.Name) then
+                    local character = LocalPlayer.Character
+                    if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
+                        local humanoidRootPart = character.HumanoidRootPart
+                        local humanoid = character.Humanoid
+                        
+                        -- Store original values
+                        local originalWalkSpeed = humanoid.WalkSpeed
+                        local originalJumpPower = humanoid.JumpPower
+                        
+                        -- Prepare for fling
+                        humanoid.WalkSpeed = 0
+                        humanoid.JumpPower = 0
+                        humanoid.Sit = false
+                        
+                        -- Create fling effect
+                        getgenv().LoopFling = true
+                        
+                        task.spawn(function()
+                            local flingForce = 50000 -- Adjust this value for fling strength
+                            local spinSpeed = 50
+                            local flingDuration = 0.5
+                            local startTime = tick()
+                            
+                            -- Phase 1: Rapid spinning to build momentum
+                            while getgenv().LoopFling and (tick() - startTime) < flingDuration do
+                                if character and character.Parent and humanoidRootPart and humanoidRootPart.Parent then
+                                    -- Rapid spinning
+                                    humanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
+                                    
+                                    -- Add velocity towards target
+                                    local targetChar = targetPlayer.Character
+                                    if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                                        local direction = (targetChar.HumanoidRootPart.Position - humanoidRootPart.Position).Unit
+                                        local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
+                                        
+                                        if not bodyVelocity then
+                                            bodyVelocity = Instance.new("BodyVelocity")
+                                            bodyVelocity.Name = "FlingVelocity"
+                                            bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                                            bodyVelocity.Parent = humanoidRootPart
+                                        end
+                                        
+                                        bodyVelocity.Velocity = direction * flingForce + Vector3.new(0, flingForce * 0.3, 0)
+                                    end
+                                else
+                                    getgenv().LoopFling = false
+                                    break
+                                end
+                                task.wait()
+                            end
+                            
+                            -- Phase 2: Launch towards target
+                            if getgenv().LoopFling and character and humanoidRootPart then
+                                local targetChar = targetPlayer.Character
+                                if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                                    local direction = (targetChar.HumanoidRootPart.Position - humanoidRootPart.Position).Unit
+                                    
+                                    -- Create powerful launch velocity
+                                    local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
+                                    if bodyVelocity then
+                                        bodyVelocity.Velocity = direction * (flingForce * 2) + Vector3.new(0, flingForce * 0.5, 0)
+                                    end
+                                    
+                                    -- Maintain launch for a short time
+                                    task.wait(0.2)
+                                end
+                            end
+                            
+                            -- Cleanup
+                            getgenv().LoopFling = false
+                            
+                            if character and humanoidRootPart then
+                                -- Remove fling velocity
+                                local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
+                                if bodyVelocity then
+                                    bodyVelocity:Destroy()
+                                end
+                                
+                                -- Restore original values
+                                if humanoid then
+                                    humanoid.WalkSpeed = originalWalkSpeed
+                                    humanoid.JumpPower = originalJumpPower
+                                end
+                            end
+                        end)
+                    end
+                else
+                    if not targetPlayer then
+                        chatmsg("Player not found!")
+                    else
+                        chatmsg("Cannot fling bot accounts or yourself!")
+                    end
+                end
+            end
+            
             -- Orbit command
             if msg:sub(1, 7) == "$orbit " then
                 stopAllLoops()
@@ -696,44 +799,55 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
         
         -- Setup silent command listeners for GUI commands
         local function setupSilentCommandListeners()
-            -- Listen for global variable changes
+            print("[Violet Bot] Setting up silent command listeners for:", LocalPlayer.Name)
+            
+            -- Enhanced global variable listener with better timing
             task.spawn(function()
-                local lastProcessedTime = 0
+                local lastProcessedId = ""
                 while true do
-                    task.wait(0.1)
+                    task.wait(0.05) -- Faster polling
                     if getgenv().VioletCommandFromGUI then
                         local commandData = getgenv().VioletCommandFromGUI
                         if commandData.sender == controller["MainAccount"] and 
-                           commandData.timestamp > lastProcessedTime then
-                            lastProcessedTime = commandData.timestamp
+                           commandData.id and commandData.id ~= lastProcessedId then
+                            lastProcessedId = commandData.id
+                            print("[Violet Bot] Processing GUI command:", commandData.command)
                             processCommand(commandData.command)
                         end
                     end
                 end
             end)
             
-            -- Listen for RemoteEvent
-            pcall(function()
-                local remoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandEvent", 5)
-                if remoteEvent then
-                    remoteEvent.OnClientEvent:Connect(function(command, sender)
-                        if sender == controller["MainAccount"] then
-                            processCommand(command)
-                        end
-                    end)
-                end
+            -- Enhanced RemoteEvent listener
+            task.spawn(function()
+                pcall(function()
+                    local remoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandEvent", 10)
+                    if remoteEvent then
+                        print("[Violet Bot] Connected to RemoteEvent")
+                        remoteEvent.OnClientEvent:Connect(function(command, sender)
+                            if sender == controller["MainAccount"] then
+                                print("[Violet Bot] Processing RemoteEvent command:", command)
+                                processCommand(command)
+                            end
+                        end)
+                    end
+                end)
             end)
             
-            -- Listen for BindableEvent
-            pcall(function()
-                local bindableEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandBindable", 5)
-                if bindableEvent then
-                    bindableEvent.Event:Connect(function(command, sender)
-                        if sender == controller["MainAccount"] then
-                            processCommand(command)
-                        end
-                    end)
-                end
+            -- Enhanced BindableEvent listener
+            task.spawn(function()
+                pcall(function()
+                    local bindableEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandBindable", 10)
+                    if bindableEvent then
+                        print("[Violet Bot] Connected to BindableEvent")
+                        bindableEvent.Event:Connect(function(command, sender)
+                            if sender == controller["MainAccount"] then
+                                print("[Violet Bot] Processing BindableEvent command:", command)
+                                processCommand(command)
+                            end
+                        end)
+                    end
+                end)
             end)
         end
         
