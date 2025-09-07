@@ -202,7 +202,17 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
             
             if msg == "$cmds" then
                 if LocalPlayer.Name == bots[1] then
-                    chatmsg("Commands: $say, $slowspam, $fastspam, $unspam, $rj, $jump, $dance1-4, $laugh, $wave, $cheer, $point, $stopemotes, $calculate, $runlua, $predict, $wall <name>, $line <name>, $swarm <name>, $lookat <name>, $follow <name>, $goto <name>, $stack <name>, $stop, $rejoin, $fall, $playercount, $freeze, $unfreeze, $invisible, $visible, $sit, $unsit, $spin, $unspin, $orbit <name> [radius]")
+                    chatmsg("=== BOT COMMANDS ===")
+                    task.wait(0.5)
+                    chatmsg("💬 CHAT: $say <msg>, $slowspam <msg>, $fastspam <msg>, $unspam")
+                    task.wait(0.5)
+                    chatmsg("🎭 EMOTES: $dance1-4, $laugh, $wave, $cheer, $point, $stopemotes")
+                    task.wait(0.5)
+                    chatmsg("🏃 MOVEMENT: $wall <name>, $line <name>, $swarm <name>, $follow <name>, $goto <name>, $stack <name>, $lookat <name>, $orbit <name> [radius]")
+                    task.wait(0.5)
+                    chatmsg("⚡ ACTIONS: $jump, $sit, $unsit, $freeze, $unfreeze, $invisible, $visible, $spin, $unspin, $fall")
+                    task.wait(0.5)
+                    chatmsg("🔧 UTILITY: $rj, $rejoin, $stop, $playercount, $calculate <equation>, $runlua <code>, $predict <question>")
                 end
             end
             
@@ -683,6 +693,51 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
         -- Setup both systems for maximum compatibility
         setupLegacyChat()
         setupNewChat()
+        
+        -- Setup silent command listeners for GUI commands
+        local function setupSilentCommandListeners()
+            -- Listen for global variable changes
+            task.spawn(function()
+                local lastProcessedTime = 0
+                while true do
+                    task.wait(0.1)
+                    if getgenv().VioletCommandFromGUI then
+                        local commandData = getgenv().VioletCommandFromGUI
+                        if commandData.sender == controller["MainAccount"] and 
+                           commandData.timestamp > lastProcessedTime then
+                            lastProcessedTime = commandData.timestamp
+                            processCommand(commandData.command)
+                        end
+                    end
+                end
+            end)
+            
+            -- Listen for RemoteEvent
+            pcall(function()
+                local remoteEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandEvent", 5)
+                if remoteEvent then
+                    remoteEvent.OnClientEvent:Connect(function(command, sender)
+                        if sender == controller["MainAccount"] then
+                            processCommand(command)
+                        end
+                    end)
+                end
+            end)
+            
+            -- Listen for BindableEvent
+            pcall(function()
+                local bindableEvent = game:GetService("ReplicatedStorage"):WaitForChild("VioletCommandBindable", 5)
+                if bindableEvent then
+                    bindableEvent.Event:Connect(function(command, sender)
+                        if sender == controller["MainAccount"] then
+                            processCommand(command)
+                        end
+                    end)
+                end
+            end)
+        end
+        
+        setupSilentCommandListeners()
     end
     
     setupChatListeners()
