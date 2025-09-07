@@ -560,106 +560,139 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
             end
             
             -- Fling command
-            if msg:sub(1, 7) == "$fling " then
-                stopAllLoops()
-                local playerName = msg:sub(8)
-                local targetPlayer = findPlayer(playerName)
-                
-                if targetPlayer and targetPlayer ~= LocalPlayer and not table.find(bots, targetPlayer.Name) then
-                    local character = LocalPlayer.Character
-                    if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
-                        local humanoidRootPart = character.HumanoidRootPart
-                        local humanoid = character.Humanoid
-                        
-                        -- Store original values
-                        local originalWalkSpeed = humanoid.WalkSpeed
-                        local originalJumpPower = humanoid.JumpPower
-                        
-                        -- Prepare for fling
-                        humanoid.WalkSpeed = 0
-                        humanoid.JumpPower = 0
-                        humanoid.Sit = false
-                        
-                        -- Create fling effect
-                        getgenv().LoopFling = true
-                        
-                        task.spawn(function()
-                            local flingForce = 50000 -- Adjust this value for fling strength
-                            local spinSpeed = 50
-                            local flingDuration = 0.5
-                            local startTime = tick()
-                            
-                            -- Phase 1: Rapid spinning to build momentum
-                            while getgenv().LoopFling and (tick() - startTime) < flingDuration do
-                                if character and character.Parent and humanoidRootPart and humanoidRootPart.Parent then
-                                    -- Rapid spinning
-                                    humanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
-                                    
-                                    -- Add velocity towards target
-                                    local targetChar = targetPlayer.Character
-                                    if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
-                                        local direction = (targetChar.HumanoidRootPart.Position - humanoidRootPart.Position).Unit
-                                        local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
-                                        
-                                        if not bodyVelocity then
-                                            bodyVelocity = Instance.new("BodyVelocity")
-                                            bodyVelocity.Name = "FlingVelocity"
-                                            bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-                                            bodyVelocity.Parent = humanoidRootPart
-                                        end
-                                        
-                                        bodyVelocity.Velocity = direction * flingForce + Vector3.new(0, flingForce * 0.3, 0)
-                                    end
-                                else
-                                    getgenv().LoopFling = false
-                                    break
-                                end
-                                task.wait()
-                            end
-                            
-                            -- Phase 2: Launch towards target
-                            if getgenv().LoopFling and character and humanoidRootPart then
-                                local targetChar = targetPlayer.Character
-                                if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
-                                    local direction = (targetChar.HumanoidRootPart.Position - humanoidRootPart.Position).Unit
-                                    
-                                    -- Create powerful launch velocity
-                                    local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
-                                    if bodyVelocity then
-                                        bodyVelocity.Velocity = direction * (flingForce * 2) + Vector3.new(0, flingForce * 0.5, 0)
-                                    end
-                                    
-                                    -- Maintain launch for a short time
-                                    task.wait(0.2)
-                                end
-                            end
-                            
-                            -- Cleanup
-                            getgenv().LoopFling = false
-                            
-                            if character and humanoidRootPart then
-                                -- Remove fling velocity
-                                local bodyVelocity = humanoidRootPart:FindFirstChild("FlingVelocity")
-                                if bodyVelocity then
-                                    bodyVelocity:Destroy()
-                                end
-                                
-                                -- Restore original values
-                                if humanoid then
-                                    humanoid.WalkSpeed = originalWalkSpeed
-                                    humanoid.JumpPower = originalJumpPower
-                                end
-                            end
-                        end)
-                    end
-                else
-                    if not targetPlayer then
-                        chatmsg("Player not found!")
-                    else
-                        chatmsg("Cannot fling bot accounts or yourself!")
-                    end
-                end
-            end
+             if msg:sub(1, 7) == "$fling " then
+                 stopAllLoops()
+                 local playerName = msg:sub(8)
+                 local targetPlayer = findPlayer(playerName)
+                 
+                 if targetPlayer and targetPlayer ~= LocalPlayer and not table.find(bots, targetPlayer.Name) then
+                     local character = LocalPlayer.Character
+                     if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Humanoid") then
+                         local humanoidRootPart = character.HumanoidRootPart
+                         local humanoid = character.Humanoid
+                         
+                         -- Store original values
+                         local originalWalkSpeed = humanoid.WalkSpeed
+                         local originalJumpPower = humanoid.JumpPower
+                         local originalHipHeight = humanoid.HipHeight
+                         
+                         -- Create fling effect
+                         getgenv().LoopFling = true
+                         
+                         task.spawn(function()
+                             local targetChar = targetPlayer.Character
+                             if not (targetChar and targetChar:FindFirstChild("HumanoidRootPart")) then
+                                 getgenv().LoopFling = false
+                                 return
+                             end
+                             
+                             local targetRootPart = targetChar.HumanoidRootPart
+                             
+                             -- Phase 1: Position bot near target
+                             local offsetPosition = targetRootPart.Position + Vector3.new(math.random(-3, 3), 0, math.random(-3, 3))
+                             humanoidRootPart.CFrame = CFrame.new(offsetPosition)
+                             
+                             -- Phase 2: Prepare for fling with physics manipulation
+                             humanoid.WalkSpeed = 0
+                             humanoid.JumpPower = 0
+                             humanoid.HipHeight = 0
+                             humanoid.Sit = false
+                             
+                             -- Create spinning body parts for collision
+                             local bodyVelocity = Instance.new("BodyVelocity")
+                             bodyVelocity.Name = "FlingVelocity"
+                             bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+                             bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                             bodyVelocity.Parent = humanoidRootPart
+                             
+                             local bodyAngularVelocity = Instance.new("BodyAngularVelocity")
+                             bodyAngularVelocity.Name = "FlingAngular"
+                             bodyAngularVelocity.MaxTorque = Vector3.new(0, math.huge, 0)
+                             bodyAngularVelocity.AngularVelocity = Vector3.new(0, 0, 0)
+                             bodyAngularVelocity.Parent = humanoidRootPart
+                             
+                             task.wait(0.1)
+                             
+                             -- Phase 3: Rapid spinning and collision
+                             local spinDuration = 2
+                             local startTime = tick()
+                             
+                             while getgenv().LoopFling and (tick() - startTime) < spinDuration do
+                                 if character and character.Parent and humanoidRootPart and humanoidRootPart.Parent then
+                                     -- Update target position
+                                     if targetChar and targetChar.Parent and targetRootPart and targetRootPart.Parent then
+                                         -- Position bot very close to target
+                                         local distance = (humanoidRootPart.Position - targetRootPart.Position).Magnitude
+                                         if distance > 5 then
+                                             -- Move closer to target
+                                             local direction = (targetRootPart.Position - humanoidRootPart.Position).Unit
+                                             humanoidRootPart.CFrame = CFrame.new(targetRootPart.Position + direction * -2)
+                                         end
+                                         
+                                         -- Extreme spinning for fling effect
+                                         bodyAngularVelocity.AngularVelocity = Vector3.new(0, 100, 0)
+                                         
+                                         -- Add collision velocity
+                                         local flingDirection = (targetRootPart.Position - humanoidRootPart.Position).Unit
+                                         bodyVelocity.Velocity = flingDirection * 50 + Vector3.new(math.random(-20, 20), math.random(10, 30), math.random(-20, 20))
+                                         
+                                         -- Make bot's hitbox larger for better collision
+                                         humanoidRootPart.Size = Vector3.new(4, 4, 4)
+                                         
+                                     else
+                                         getgenv().LoopFling = false
+                                         break
+                                     end
+                                 else
+                                     getgenv().LoopFling = false
+                                     break
+                                 end
+                                 task.wait()
+                             end
+                             
+                             -- Phase 4: Final powerful collision
+                             if getgenv().LoopFling and targetChar and targetRootPart then
+                                 -- Position directly on target for maximum collision
+                                 humanoidRootPart.CFrame = CFrame.new(targetRootPart.Position)
+                                 
+                                 -- Maximum spin and velocity
+                                 bodyAngularVelocity.AngularVelocity = Vector3.new(0, 200, 0)
+                                 bodyVelocity.Velocity = Vector3.new(math.random(-100, 100), 50, math.random(-100, 100))
+                                 
+                                 task.wait(0.5)
+                             end
+                             
+                             -- Cleanup
+                             getgenv().LoopFling = false
+                             
+                             if character and humanoidRootPart then
+                                 -- Reset hitbox size
+                                 humanoidRootPart.Size = Vector3.new(2, 2, 1)
+                                 
+                                 -- Remove physics objects
+                                 local bodyVel = humanoidRootPart:FindFirstChild("FlingVelocity")
+                                 if bodyVel then bodyVel:Destroy() end
+                                 
+                                 local bodyAng = humanoidRootPart:FindFirstChild("FlingAngular")
+                                 if bodyAng then bodyAng:Destroy() end
+                                 
+                                 -- Restore original values
+                                 if humanoid then
+                                     humanoid.WalkSpeed = originalWalkSpeed
+                                     humanoid.JumpPower = originalJumpPower
+                                     humanoid.HipHeight = originalHipHeight
+                                 end
+                             end
+                         end)
+                     end
+                 else
+                     if not targetPlayer then
+                         chatmsg("Player not found!")
+                     else
+                         chatmsg("Cannot fling bot accounts or yourself!")
+                     end
+                 end
+             end
             
             -- Orbit command
             if msg:sub(1, 7) == "$orbit " then
