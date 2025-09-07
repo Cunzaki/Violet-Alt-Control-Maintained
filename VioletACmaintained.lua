@@ -22,27 +22,6 @@ local config = args[1].config
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]) then
     local UserSettings = UserSettings()
     UserSettings.GameSettings.MasterVolume = 0
@@ -73,24 +52,39 @@ if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]
         end
     end
 end
+local function sendChatMessage(message, target)
+    target = target or "All"
+    local success = pcall(function()
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(message)
+    end)
+    
+    if not success then
+        pcall(function()
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, target)
+        end)
+    end
+end
+
 for i, botName in ipairs(bots) do
     if game:GetService("Players").LocalPlayer.Name == botName and config["SendJoinMsg"] == true then
-    ohString1 = "A bot has loaded! [Bot " .. i .. " of " .. #bots .. "]"
-    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(ohString1)
+        ohString1 = "A bot has loaded! [Bot " .. i .. " of " .. #bots .. "]"
+        sendChatMessage(ohString1)
         task.wait()
     end
 end
 
     if not (game:GetService("Players").LocalPlayer.Name == controller["MainAccount"]) then
-    game:GetService("Players"):FindFirstChild(controller["MainAccount"]).Chatted:Connect(function(msg)
+    local mainAccount = game:GetService("Players"):FindFirstChild(controller["MainAccount"])
+    if mainAccount then
+        mainAccount.Chatted:Connect(function(msg)
+            local success, error = pcall(function()
 
 
     local args = string.split(string.lower(msg), " ")
     local cmd = args[1]
     local function chatmsg(message, target)
-    target = target or "All"
-    game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(message)
-end
+        sendChatMessage(message, target)
+    end
 
         
     if cmd == "$say" then
@@ -163,82 +157,112 @@ end
         if game:GetService("Players").LocalPlayer.Name == bots[1] then
         chatmsg("")
         elseif game:GetService("Players").LocalPlayer.Name ~= bots[1] then
-        --
+        
         end
         end
             
     if msg == "$jump" then
-        game:GetService("Players").LocalPlayer.Character.Humanoid.Jump = true
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.Jump = true
+        end
     end
 
     if msg == "$dance1" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e dance")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e dance")
+        end
     end 
 
     if msg == "$dance2" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e dance2")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e dance2")
+        end
     end
 
     if msg == "$dance3" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e dance3")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e dance3")
+        end
     end
 
     if msg == "$dance4" then
-        local Anim = Instance.new("Animation")
-        Anim.AnimationId = "rbxassetid://12874447851"
-        local k = game:GetService("Players").LocalPlayer.Character.Humanoid:LoadAnimation(Anim)
-        k:Play(0)
-        k:AdjustSpeed(1)
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        game:GetService("Players").LocalPlayer.Character.Humanoid.Running:connect(function(speed)
-        if speed > 0 then
-            game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        k:Stop(0)
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Humanoid") and character:FindFirstChild("Animate") then
+            local Anim = Instance.new("Animation")
+            Anim.AnimationId = "rbxassetid://12874447851"
+            local k = character.Humanoid:LoadAnimation(Anim)
+            k:Play(0)
+            k:AdjustSpeed(1)
+            character.Animate.Disabled = true
+            character.Humanoid.Running:connect(function(speed)
+                if speed > 0 then
+                    character.Animate.Disabled = false
+                    k:Stop(0)
+                end
+            end)
         end
-        end)
-        end
+    end
 
     if msg == "$laugh" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e laugh")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e laugh")
+        end
     end
          
     if msg == "$wave" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e wave")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e wave")
+        end
     end
 
     if msg == "$cheer" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e cheer")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e cheer")
+        end
     end
 
     if msg == "$point" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
-        game:GetService("Players"):Chat("/e point")
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+            game:GetService("Players"):Chat("/e point")
+        end
     end
 
     if msg == "$stopemotes" then
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = true
-        task.wait()
-        game:GetService("Players").LocalPlayer.Character.Animate.Disabled = false
+        local character = game:GetService("Players").LocalPlayer.Character
+        if character and character:FindFirstChild("Animate") then
+            character.Animate.Disabled = true
+            task.wait()
+            character.Animate.Disabled = false
+        end
     end
 
     if msg and #msg >= 10 and msg:sub(1, 10) == "$calculate" then
@@ -328,10 +352,17 @@ if msg:sub(1, 6) == "$wall " then
             chatmsg("The user you specified is one of your bots!")
         else
             getgenv().LoopWall = true
-            while getgenv().LoopWall do
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players")[player.Name].Character.HumanoidRootPart.CFrame * CFrame.new(offset, 0, 0)
-                task.wait()
-            end
+             while getgenv().LoopWall do
+                 local localChar = game:GetService("Players").LocalPlayer.Character
+                 local targetChar = game:GetService("Players")[player.Name].Character
+                 if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                     localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(offset, 0, 0)
+                 else
+                     getgenv().LoopWall = false
+                     break
+                 end
+                 task.wait()
+             end
         end
     end
 end
@@ -366,10 +397,17 @@ end
             	chatmsg("The user you specified is one of your bots!")
         	else
                 getgenv().LoopLine = true
-                while getgenv().LoopLine do
-                    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players")[player.Name].Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, offset)
-                    task.wait()
-                end
+                 while getgenv().LoopLine do
+                     local localChar = game:GetService("Players").LocalPlayer.Character
+                     local targetChar = game:GetService("Players")[player.Name].Character
+                     if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                         localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(0, 0, offset)
+                     else
+                         getgenv().LoopLine = false
+                         break
+                     end
+                     task.wait()
+                 end
             end
         end
        end
@@ -403,10 +441,17 @@ if msg:sub(1, 7) == "$swarm " then
             chatmsg("The user you specified is one of your bots!")
         else
             getgenv().LoopSwarm = true
-            while getgenv().LoopSwarm do
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players")[player.Name].Character.HumanoidRootPart.CFrame * CFrame.new(math.random(-5,5),0,math.random(-5,5))
-                task.wait()
-            end
+             while getgenv().LoopSwarm do
+                 local localChar = game:GetService("Players").LocalPlayer.Character
+                 local targetChar = game:GetService("Players")[player.Name].Character
+                 if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                     localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(math.random(-5,5),0,math.random(-5,5))
+                 else
+                     getgenv().LoopSwarm = false
+                     break
+                 end
+                 task.wait()
+             end
         end
     end
 end
@@ -439,10 +484,17 @@ if msg:sub(1, 8) == "$lookat " then
             chatmsg("The user you specified is one of your bots!")
         else
             getgenv().LoopLook = true
-            while getgenv().LoopLook do
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.lookAt(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position, game:GetService("Players")[player.Name].Character.HumanoidRootPart.Position)
-                task.wait()
-            end
+             while getgenv().LoopLook do
+                 local localChar = game:GetService("Players").LocalPlayer.Character
+                 local targetChar = game:GetService("Players")[player.Name].Character
+                 if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                     localChar.HumanoidRootPart.CFrame = CFrame.lookAt(localChar.HumanoidRootPart.Position, targetChar.HumanoidRootPart.Position)
+                 else
+                     getgenv().LoopLook = false
+                     break
+                 end
+                 task.wait()
+             end
         end
     end
 end
@@ -473,12 +525,19 @@ if msg:sub(1, 8) == "$follow " then
                     local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
                     if humanoidRootPart then
                         getgenv().LoopFollow = true
-                        while getgenv().LoopFollow do
-                            if (LocalPlayer.Character.HumanoidRootPart.Position - humanoidRootPart.Position).Magnitude > 3 then
-                                LocalPlayer.Character.Humanoid:MoveTo(humanoidRootPart.Position)
-                            end
-                            task.wait()
-                        end
+                         while getgenv().LoopFollow do
+                             local localChar = LocalPlayer.Character
+                             local targetChar = player.Character
+                             if localChar and localChar:FindFirstChild("HumanoidRootPart") and localChar:FindFirstChild("Humanoid") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                                 if (localChar.HumanoidRootPart.Position - targetChar.HumanoidRootPart.Position).Magnitude > 3 then
+                                     localChar.Humanoid:MoveTo(targetChar.HumanoidRootPart.Position)
+                                 end
+                             else
+                                 getgenv().LoopFollow = false
+                                 break
+                             end
+                             task.wait()
+                         end
                     end
                 end
             end
@@ -510,13 +569,14 @@ if msg:sub(1, 6) == "$goto " then
                 elseif table.find(bots, player.Name) then
                     chatmsg("The user you specified is one of your bots!")
                 else
-                    local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-                    if humanoidRootPart then
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, -2)
-                        task.wait()
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.lookAt(LocalPlayer.Character.HumanoidRootPart.Position, player.Character.HumanoidRootPart.Position)
-                        task.wait()
-                    end
+                    local localChar = LocalPlayer.Character
+                     local targetChar = player.Character
+                     if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                         localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(0, 0, -2)
+                         task.wait()
+                         localChar.HumanoidRootPart.CFrame = CFrame.lookAt(localChar.HumanoidRootPart.Position, targetChar.HumanoidRootPart.Position)
+                         task.wait()
+                     end
                 end
             end
         end
@@ -561,11 +621,20 @@ if msg:sub(1, 7) == "$stack " then
             getgenv().LoopStack = true
             local currentPlayer = player
             while getgenv().LoopStack and currentPlayer == player do
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players")[player.Name].Character:WaitForChild("HumanoidRootPart").CFrame * CFrame.new(0, offset, 0)
-                game:GetService("Workspace").NewPartInstance.CFrame = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame * CFrame.new(0, -3.6, 0)
-                task.wait()
-                currentPlayer = game:GetService("Players"):GetPlayerByUserId(player.UserId)
-            end
+                 local localChar = game:GetService("Players").LocalPlayer.Character
+                 local targetChar = game:GetService("Players")[player.Name].Character
+                 if localChar and localChar:FindFirstChild("HumanoidRootPart") and targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                     localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(0, offset, 0)
+                     if game:GetService("Workspace"):FindFirstChild("NewPartInstance") then
+                         game:GetService("Workspace").NewPartInstance.CFrame = localChar.HumanoidRootPart.CFrame * CFrame.new(0, -3.6, 0)
+                     end
+                 else
+                     getgenv().LoopStack = false
+                     break
+                 end
+                 task.wait()
+                 currentPlayer = game:GetService("Players"):GetPlayerByUserId(player.UserId)
+             end
             for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
                 if v.Name == "NewPartInstance" then
                     v:Destroy()
@@ -590,8 +659,11 @@ end
         end
 
         if msg == "$rejoin" then
-        game:GetService("Players").LocalPlayer.Character:Destroy()
-        end
+             local character = game:GetService("Players").LocalPlayer.Character
+             if character then
+                 character:Destroy()
+             end
+         end
            
         if msg == "$fall" then
         function getRoot(char)
@@ -618,8 +690,13 @@ end
         local playerAmount = #game:GetService("Players"):GetPlayers() - botAmount
         chatmsg("There are " .. #game:GetService("Players"):GetPlayers() .. " players currently in the server including " .. botAmount .. " bot(s), " .. playerAmount .. " players without the bot(s) being included!")
         elseif game:GetService("Players").LocalPlayer.Name ~= bots[1] then
-        --
+        
         end
         end
+            end)
+            if not success then
+                warn("Bot command error: " .. tostring(error))
+            end
         end)
+    end
 end
